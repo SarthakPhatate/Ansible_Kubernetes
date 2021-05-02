@@ -1,0 +1,23 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+        - credential.yml
+  tasks:
+    - name: Running EC2 Role
+      include_role:
+        name: EC2-instance
+
+- hosts: ec2_master
+  gather_facts: no
+  tasks:
+    - name: Running K8s Master Role
+      include_role:
+        name: k8s-master
+
+- hosts: ec2_slave
+  gather_facts: no
+  tasks:
+    - name: Running K8s Slave Role
+      include_role:
+        name: k8s-slave
+

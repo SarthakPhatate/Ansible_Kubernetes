@@ -1,0 +1,6 @@
+---
+# vars file for EC2-instance
+
+inst_tag:
+  - master
+  - slave

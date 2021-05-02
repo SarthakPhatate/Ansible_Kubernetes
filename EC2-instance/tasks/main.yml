@@ -1,0 +1,37 @@
+---
+# tasks file for EC2-instance
+
+- name: Launching ec2-instance on AWS
+  ec2:
+    key_name: task
+    instance_type: t2.micro
+    image: ami-045e6fa7127ab1ac4
+    wait: true
+    group_id: sg-42d06d38
+    count: 1
+    vpc_subnet_id: subnet-0b947660
+    assign_public_ip: yes
+    region: ap-south-1
+    state: present
+    instance_tags:
+      Name: "{{ item }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+  register: instance
+  loop: "{{ inst_tag }}"
+
+- name: Adding host to master
+  add_host:
+    hostname: "{{ instance.results[0].instances[0].public_ip }}"
+    groupname: ec2_master
+
+- name: Adding host to slave
+  add_host:
+    hostname: "{{ instance.results[1].instances[0].public_ip }}"
+    groupname: ec2_slave
+
+- name: ssh
+  wait_for:
+    host: "{{ instance.results[1].instances[0].public_dns_name }}"
+    port: 22
+    state: started
